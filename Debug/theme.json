@@ -1,0 +1,51 @@
+{
+  "appearance_mode": "dark",
+  "color_theme": "blue",
+
+  "window": {
+    "title": "Joystick MIDI Debug",
+    "geometry": "700x800",
+    "min_width": 600,
+    "min_height": 500
+  },
+
+  "fonts": {
+    "family": "",
+    "sizes": {
+      "small": 10,
+      "normal": 12,
+      "large": 15
+    }
+  },
+
+  "colors": {
+    "danger": "#8c2a2a",
+    "danger_hover": "#a83232",
+    "toggle_off": "#555555",
+    "toggle_on": "#2a8c4a",
+    "accent_text": "#ffaa33",
+    "hint_text": "#888888",
+
+    "pad_background": "#141414",
+    "pad_border": "#666666",
+    "pad_zone_lines": "#2a2a2a",
+    "pad_zone_labels": "#999999",
+    "pad_crosshair": "#aa3333",
+    "pad_deadzone_fill": "#5a3a1a",
+    "pad_deadzone_outline": "#ffaa33",
+    "pad_dot_idle": "#888888",
+    "pad_dot_active": "#ff5a5a",
+    "pad_center_label": "#777777"
+  },
+
+  "dimensions": {
+    "pad_width": 640,
+    "pad_size": 320,
+    "pad_dot_radius": 10,
+    "log_height": 150,
+    "port_menu_width": 180,
+    "button_width": 80,
+    "connect_button_width": 100,
+    "sweep_button_width": 120
+  }
+}

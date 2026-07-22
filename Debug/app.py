@@ -4,6 +4,7 @@ from tkinter import messagebox
 from note_utils import BAUD, SWEEP_CHANNEL, CENTER, note_name
 from serial_link import SerialLink
 from joystick_pad import JoystickPad
+from theme import theme
 from protocol import (
     Commands, parse_line,
     PosEvent, NoteOnEvent, NoteOffEvent, CCEvent,
@@ -11,16 +12,16 @@ from protocol import (
     RawLine, MidiBytes,
 )
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+ctk.set_appearance_mode(theme.appearance_mode)
+ctk.set_default_color_theme(theme.color_theme)
 
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Joystick MIDI Debug")
-        self.geometry("700x800")
-        self.minsize(600, 500)
+        self.title(theme.window("title", "Joystick MIDI Debug"))
+        self.geometry(theme.window("geometry", "700x800"))
+        self.minsize(theme.window("min_width", 600), theme.window("min_height", 500))
 
         self.link = SerialLink(BAUD)
         self.base_note = 60
@@ -36,7 +37,7 @@ class App(ctk.CTk):
     def _build_ui(self):
         # Log pinned to the bottom of the window first, so it always
         # reserves its space no matter how tall the scrollable content above grows.
-        self.log = ctk.CTkTextbox(self, height=150)
+        self.log = ctk.CTkTextbox(self, height=theme.dim("log_height", 150))
         self.log.pack(side="bottom", padx=10, pady=10, fill="x")
 
         content = ctk.CTkScrollableFrame(self, label_text="")
@@ -44,18 +45,22 @@ class App(ctk.CTk):
 
         top = ctk.CTkFrame(content)
         top.pack(fill="x", pady=(0, 10))
-        self.port_menu = ctk.CTkComboBox(top, values=[], width=180)
+        self.port_menu = ctk.CTkComboBox(top, values=[], width=theme.dim("port_menu_width", 180))
         self.port_menu.pack(side="left", padx=4)
-        ctk.CTkButton(top, text="Refresh", width=80, command=self.refresh_ports).pack(side="left", padx=4)
-        self.connect_btn = ctk.CTkButton(top, text="Connect", width=100, command=self.toggle_connect)
+        ctk.CTkButton(top, text="Refresh", width=theme.dim("button_width", 80),
+                      command=self.refresh_ports).pack(side="left", padx=4)
+        self.connect_btn = ctk.CTkButton(top, text="Connect", width=theme.dim("connect_button_width", 100),
+                                          command=self.toggle_connect)
         self.connect_btn.pack(side="left", padx=4)
 
         mode_frame = ctk.CTkFrame(content)
         mode_frame.pack(fill="x", pady=(0, 10))
         ctk.CTkButton(mode_frame, text="Debug Mode", command=lambda: self.set_mode("D")).pack(side="left", padx=4)
         ctk.CTkButton(mode_frame, text="MIDI Mode", command=lambda: self.set_mode("M")).pack(side="left", padx=4)
-        ctk.CTkButton(mode_frame, text="Reset to Defaults", fg_color="#8c2a2a",
-                      hover_color="#a83232", command=self.confirm_reset).pack(side="right", padx=4)
+        ctk.CTkButton(mode_frame, text="Reset to Defaults",
+                      fg_color=theme.color("danger", "#8c2a2a"),
+                      hover_color=theme.color("danger_hover", "#a83232"),
+                      command=self.confirm_reset).pack(side="right", padx=4)
 
         param_frame = ctk.CTkFrame(content)
         param_frame.pack(fill="x", pady=(0, 10))
@@ -79,15 +84,15 @@ class App(ctk.CTk):
         quick_frame.pack(fill="x", pady=(0, 10))
         ctk.CTkLabel(quick_frame, text="Quick set:").pack(side="left", padx=6)
         for label, val in [("C2 (36)", 36), ("C3 (48)", 48), ("C4 (60)", 60), ("C5 (72)", 72), ("C6 (84)", 84)]:
-            ctk.CTkButton(quick_frame, text=label, width=80,
+            ctk.CTkButton(quick_frame, text=label, width=theme.dim("button_width", 80),
                           command=lambda v=val: self.jump_base(v)).pack(side="left", padx=4)
 
         sweep_frame = ctk.CTkFrame(content)
         sweep_frame.pack(fill="x", pady=(0, 10))
         sweep_frame.grid_columnconfigure(2, weight=1)
 
-        self.sweep_btn = ctk.CTkButton(sweep_frame, text="Sweep: OFF", width=120,
-                                        fg_color="#555", command=self.toggle_sweep)
+        self.sweep_btn = ctk.CTkButton(sweep_frame, text="Sweep: OFF", width=theme.dim("sweep_button_width", 120),
+                                        fg_color=theme.color("toggle_off", "#555555"), command=self.toggle_sweep)
         self.sweep_btn.grid(row=0, column=0, padx=6, pady=6)
 
         ctk.CTkLabel(sweep_frame, text="Speed (ms/step)").grid(row=0, column=1, padx=6)
@@ -98,17 +103,21 @@ class App(ctk.CTk):
         self.rate_label.grid(row=0, column=3, padx=6)
 
         ctk.CTkLabel(sweep_frame, text="Sweep only sounds while a button is held",
-                     font=("", 10), text_color="#888").grid(row=1, column=0, columnspan=4, pady=(0, 4))
+                     font=theme.font("small"), text_color=theme.color("hint_text", "#888888")
+                     ).grid(row=1, column=0, columnspan=4, pady=(0, 4))
 
         self.pad = JoystickPad(content)
         self.pad.pack(pady=(0, 4))
 
-        self.current_note_label = ctk.CTkLabel(content, text="Target Note (buttons): -- (--)", font=("", 15, "bold"))
+        self.current_note_label = ctk.CTkLabel(content, text="Target Note (buttons): -- (--)",
+                                                 font=theme.font("large", bold=True))
         self.current_note_label.pack(pady=(0, 2))
         self.sweep_note_label = ctk.CTkLabel(content, text="Sweep Note: -- (--)",
-                                              font=("", 15, "bold"), text_color="#ffaa33")
+                                              font=theme.font("large", bold=True),
+                                              text_color=theme.color("accent_text", "#ffaa33"))
         self.sweep_note_label.pack(pady=(0, 4))
-        self.dz_status_label = ctk.CTkLabel(content, text="Ignored range: 512 ± 40 (472 - 552)", font=("", 12))
+        self.dz_status_label = ctk.CTkLabel(content, text="Ignored range: 512 ± 40 (472 - 552)",
+                                             font=theme.font("normal"))
         self.dz_status_label.pack(pady=(0, 10))
 
     # ---------- serial plumbing ----------
@@ -253,9 +262,9 @@ class App(ctk.CTk):
     def apply_sweep_state(self, enabled: bool):
         self.sweep_on = enabled
         if enabled:
-            self.sweep_btn.configure(text="Sweep: ON", fg_color="#2a8c4a")
+            self.sweep_btn.configure(text="Sweep: ON", fg_color=theme.color("toggle_on", "#2a8c4a"))
         else:
-            self.sweep_btn.configure(text="Sweep: OFF", fg_color="#555")
+            self.sweep_btn.configure(text="Sweep: OFF", fg_color=theme.color("toggle_off", "#555555"))
             self.sweep_note_label.configure(text="Sweep Note: -- (--)")
 
     def update_current_note_label(self):

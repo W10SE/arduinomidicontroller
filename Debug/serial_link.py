@@ -7,8 +7,7 @@ import serial.tools.list_ports
 class SerialLink:
     """Owns the serial connection and a background reader thread.
 
-    Knows nothing about MIDI, note names, or the GUI -- just moves raw
-    text lines (or hex-encoded raw bytes when in MIDI mode) onto a
+    It just moves raw text lines (or hex-encoded raw bytes when in MIDI mode) onto a
     thread-safe queue for something else to consume via poll().
     """
 
