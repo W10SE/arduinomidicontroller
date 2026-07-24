@@ -5,7 +5,7 @@ from theme import theme
 
 
 class JoystickPad:
-    """Owns the canvas drawing for the joystick position + deadzone visual.
+    """Handles the canvas drawing for the joystick position + deadzone visual.
 
     All colors and sizes come from theme.py / theme.json -- see THEME_GUIDE.md
     to restyle this without touching this file.
