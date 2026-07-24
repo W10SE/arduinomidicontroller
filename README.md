@@ -1,4 +1,4 @@
-# Arduino MIDI Controller
+# Arduino Joystick MIDI Controller
 
 A joystick-and-buttons MIDI controller built on an Arduino, paired with a desktop debug/config app written in Python. The joystick picks a note zone and controls velocity/volume, four buttons trigger notes, and an optional "sweep" mode auto-arpeggiates across the octave while a button is held.
 
